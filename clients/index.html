@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+ <textarea id="msg" name="msg" id="" cols="20" rows="3"></textarea> 
+
+ <div id="response"></div>
+</body>
+<script>
+  const ws = new WebSocket('ws://localhost:3000/ws')
+  const input = document.getElementById("msg")
+  const response = document.getElementById("response")
+
+  const buildMsg = (msg) => {
+    let currentDate = new Date();
+    let cDay = currentDate.getDate()
+    let cMonth = currentDate.getMonth() + 1
+    let cYear = currentDate.getFullYear()
+    let cHour = currentDate.getHours()
+    let cMinutes = currentDate.getMinutes()
+
+    const p = document.createElement('p')
+    const text = document.createTextNode(`${cHour}:${cMinutes}: ${msg}`)
+    p.appendChild(text)
+    response.appendChild(p)
+  }
+
+  const wsEvents = () => {
+    ws.onmessage = (msg) => buildMsg(msg.data)
+  }
+
+  input.addEventListener('keyup', evt => {
+    if(evt.key == 'Enter'){
+      wsEvents()
+      ws.send(input.value)
+      buildMsg(input.value)
+      input.value = ''
+    }
+  })
+
+</script>
+</html>
